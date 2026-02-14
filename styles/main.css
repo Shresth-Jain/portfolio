@@ -824,6 +824,7 @@ body {
     gap: 1rem;
     text-decoration: none;
     transition: all var(--transition-normal);
+    min-width: 0;
 }
 
 .contact-card:hover {
@@ -837,6 +838,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+}
+
+.contact-info {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
 }
 
 .contact-info h3 {
@@ -849,6 +857,9 @@ body {
     font-family: var(--font-mono);
     font-size: 0.85rem;
     color: var(--text-secondary);
+    word-break: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.4;
 }
 
 /* ===========================
