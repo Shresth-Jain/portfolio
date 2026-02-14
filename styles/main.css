@@ -701,6 +701,36 @@ body {
     box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
 }
 
+.timeline-header-with-logo {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+}
+
+.company-logo-wrapper {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+}
+
+.company-logo {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.timeline-header-text {
+    flex: 1;
+}
+
 .timeline-header {
     display: flex;
     justify-content: space-between;
@@ -724,6 +754,12 @@ body {
 .timeline-company {
     font-size: 1rem;
     color: var(--secondary);
+    margin-bottom: 0.25rem;
+}
+
+.timeline-location {
+    font-size: 0.9rem;
+    color: var(--text-dim);
     margin-bottom: 1rem;
 }
 
@@ -929,6 +965,24 @@ body {
     }
 
     .terminal-window {
+        font-size: 0.8rem;
+    }
+
+    .timeline-header-with-logo {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .company-logo-wrapper {
+        width: 50px;
+        height: 50px;
+    }
+
+    .timeline-title {
+        font-size: 1.1rem;
+    }
+
+    .timeline-date {
         font-size: 0.8rem;
     }
 }
