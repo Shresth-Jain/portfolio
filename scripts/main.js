@@ -5,19 +5,24 @@
 const canvas = document.getElementById('matrix-canvas');
 const ctx = canvas.getContext('2d');
 
-// Set canvas size
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
 // Matrix characters
 const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
 const matrixChars = matrix.split("");
 
 const fontSize = 14;
-let columns = canvas.width / fontSize;
+let columns;
+let drops;
 
-// Array to store y-coordinate of each column
-let drops = Array(Math.floor(columns)).fill(1);
+// Initialize canvas dimensions
+function initCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    columns = canvas.width / fontSize;
+    drops = Array(Math.floor(columns)).fill(1);
+}
+
+// Initialize on page load
+initCanvas();
 
 // Draw matrix rain
 function drawMatrix() {
@@ -45,10 +50,12 @@ setInterval(drawMatrix, 35);
 
 // Resize canvas on window resize
 window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    columns = canvas.width / fontSize;
-    drops = Array(Math.floor(columns)).fill(1);
+    initCanvas();
+});
+
+// Re-initialize on page load to ensure correct dimensions
+window.addEventListener('load', () => {
+    initCanvas();
 });
 
 // ===========================
