@@ -14,10 +14,10 @@ const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
 const matrixChars = matrix.split("");
 
 const fontSize = 14;
-const columns = canvas.width / fontSize;
+let columns = canvas.width / fontSize;
 
 // Array to store y-coordinate of each column
-const drops = Array(Math.floor(columns)).fill(1);
+let drops = Array(Math.floor(columns)).fill(1);
 
 // Draw matrix rain
 function drawMatrix() {
@@ -47,6 +47,8 @@ setInterval(drawMatrix, 35);
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    columns = canvas.width / fontSize;
+    drops = Array(Math.floor(columns)).fill(1);
 });
 
 // ===========================
