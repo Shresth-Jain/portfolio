@@ -59,50 +59,261 @@ window.addEventListener('load', () => {
 });
 
 // ===========================
-// Typing Effect
+// Interactive Terminal
 // ===========================
 
-const commands = [
-    "cat about.txt",
-    "ls -la skills/",
-    "git log --oneline",
-    "whoami"
-];
+const terminalInput = document.getElementById('terminal-input');
+const terminalOutput = document.getElementById('terminal-output');
+let commandHistory = [];
+let historyIndex = -1;
 
-let commandIndex = 0;
-let charIndex = 0;
-const typedTextElement = document.querySelector('.typed-text');
-const cursor = document.querySelector('.cursor');
+// Available commands
+const terminalCommands = {
+    help: {
+        description: 'Show available commands',
+        execute: () => {
+            return `Available commands:
+  <span class="highlight">about</span>        - Learn more about me
+  <span class="highlight">experience</span>   - View my work experience
+  <span class="highlight">education</span>    - See my educational background
+  <span class="highlight">skills</span>       - Check out my technical skills
+  <span class="highlight">projects</span>     - Browse my projects
+  <span class="highlight">publications</span> - View my research publications
+  <span class="highlight">contact</span>      - Get in touch with me
+  <span class="highlight">resume</span>       - Open my resume
+  <span class="highlight">github</span>       - Visit my GitHub profile
+  <span class="highlight">linkedin</span>     - Visit my LinkedIn profile
+  <span class="highlight">email</span>        - Show my email address
+  <span class="highlight">ls</span>           - List all sections
+  <span class="highlight">clear</span>        - Clear terminal output
+  <span class="highlight">whoami</span>       - Display information about me
+  <span class="highlight">help</span>         - Show this help message`;
+        }
+    },
+    about: {
+        description: 'Learn more about me',
+        execute: () => {
+            scrollToSection('about');
+            return 'Navigating to About section...';
+        }
+    },
+    experience: {
+        description: 'View work experience',
+        execute: () => {
+            scrollToSection('experience');
+            return 'Navigating to Experience section...';
+        }
+    },
+    work: {
+        description: 'View work experience',
+        execute: () => {
+            scrollToSection('experience');
+            return 'Navigating to Experience section...';
+        }
+    },
+    education: {
+        description: 'View education',
+        execute: () => {
+            scrollToSection('education');
+            return 'Navigating to Education section...';
+        }
+    },
+    skills: {
+        description: 'View technical skills',
+        execute: () => {
+            scrollToSection('skills');
+            return 'Navigating to Skills section...';
+        }
+    },
+    projects: {
+        description: 'Browse projects',
+        execute: () => {
+            scrollToSection('projects');
+            return 'Navigating to Projects section...';
+        }
+    },
+    publications: {
+        description: 'View publications',
+        execute: () => {
+            scrollToSection('publications');
+            return 'Navigating to Publications section...';
+        }
+    },
+    contact: {
+        description: 'Get contact information',
+        execute: () => {
+            scrollToSection('contact');
+            return 'Navigating to Contact section...';
+        }
+    },
+    resume: {
+        description: 'Open resume',
+        execute: () => {
+            window.open('Shresth_Jain_2024_Resume.pdf', '_blank');
+            return 'Opening resume in new tab...';
+        }
+    },
+    github: {
+        description: 'Visit GitHub profile',
+        execute: () => {
+            window.open('https://github.com/Shresth-Jain', '_blank');
+            return 'Opening GitHub profile...';
+        }
+    },
+    linkedin: {
+        description: 'Visit LinkedIn profile',
+        execute: () => {
+            window.open('https://www.linkedin.com/in/er-shresth-jain/', '_blank');
+            return 'Opening LinkedIn profile...';
+        }
+    },
+    email: {
+        description: 'Show email address',
+        execute: () => {
+            return `Email: <a href="mailto:er.shresthjain@gmail.com" style="color: var(--primary);">er.shresthjain@gmail.com</a>`;
+        }
+    },
+    ls: {
+        description: 'List all sections',
+        execute: () => {
+            return `Available sections:
+  <span class="highlight">about/</span>
+  <span class="highlight">experience/</span>
+  <span class="highlight">education/</span>
+  <span class="highlight">skills/</span>
+  <span class="highlight">projects/</span>
+  <span class="highlight">publications/</span>
+  <span class="highlight">contact/</span>`;
+        }
+    },
+    clear: {
+        description: 'Clear terminal',
+        execute: () => {
+            terminalOutput.innerHTML = '';
+            return null;
+        }
+    },
+    whoami: {
+        description: 'Display info about me',
+        execute: () => {
+            return `<span class="highlight">Shresth Jain</span> - Software Engineer
+Currently working at <span class="highlight">BrowserStack</span>
+Specializing in AI/ML, Backend Development, and System Architecture
+Location: Bengaluru, India 🇮🇳`;
+        }
+    },
+    pwd: {
+        description: 'Print working directory',
+        execute: () => {
+            return '/home/visitor/portfolio';
+        }
+    }
+};
 
-function typeCommand() {
-    if (charIndex < commands[commandIndex].length) {
-        typedTextElement.textContent += commands[commandIndex].charAt(charIndex);
-        charIndex++;
-        setTimeout(typeCommand, 100);
-    } else {
-        // Wait before starting next command
+// Scroll to section helper
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
         setTimeout(() => {
-            deleteCommand();
-        }, 2000);
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
     }
 }
 
-function deleteCommand() {
-    if (charIndex > 0) {
-        typedTextElement.textContent = commands[commandIndex].substring(0, charIndex - 1);
-        charIndex--;
-        setTimeout(deleteCommand, 50);
+// Add output to terminal
+function addOutput(command, output) {
+    const commandLine = document.createElement('div');
+    commandLine.className = 'terminal-command-line';
+    commandLine.innerHTML = `<span class="prompt">visitor@portfolio:~$</span> <span class="command">${command}</span>`;
+    terminalOutput.appendChild(commandLine);
+    
+    if (output) {
+        const outputLine = document.createElement('div');
+        outputLine.className = 'terminal-command-output';
+        outputLine.innerHTML = output;
+        terminalOutput.appendChild(outputLine);
+    }
+    
+    // Scroll to bottom
+    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+}
+
+// Execute command
+function executeCommand(input) {
+    const command = input.trim().toLowerCase();
+    
+    if (!command) return;
+    
+    // Add to history
+    commandHistory.push(input);
+    historyIndex = commandHistory.length;
+    
+    // Check if command exists
+    if (terminalCommands[command]) {
+        const output = terminalCommands[command].execute();
+        addOutput(input, output);
     } else {
-        // Move to next command
-        commandIndex = (commandIndex + 1) % commands.length;
-        setTimeout(typeCommand, 500);
+        addOutput(input, `<span style="color: var(--accent);">Command not found: ${command}</span>\nType <span class="highlight">'help'</span> for available commands.`);
     }
+    
+    // Clear input
+    terminalInput.value = '';
 }
 
-// Start typing effect after page load
-window.addEventListener('load', () => {
-    setTimeout(typeCommand, 1000);
-});
+// Handle terminal input
+if (terminalInput) {
+    terminalInput.addEventListener('keydown', (e) => {
+        // Enter key - execute command
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            executeCommand(terminalInput.value);
+        }
+        // Up arrow - previous command
+        else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (historyIndex > 0) {
+                historyIndex--;
+                terminalInput.value = commandHistory[historyIndex];
+            }
+        }
+        // Down arrow - next command
+        else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (historyIndex < commandHistory.length - 1) {
+                historyIndex++;
+                terminalInput.value = commandHistory[historyIndex];
+            } else {
+                historyIndex = commandHistory.length;
+                terminalInput.value = '';
+            }
+        }
+        // Tab key - autocomplete
+        else if (e.key === 'Tab') {
+            e.preventDefault();
+            const input = terminalInput.value.toLowerCase();
+            const matches = Object.keys(terminalCommands).filter(cmd => cmd.startsWith(input));
+            
+            if (matches.length === 1) {
+                terminalInput.value = matches[0];
+            } else if (matches.length > 1) {
+                addOutput(input, matches.join('  '));
+            }
+        }
+    });
+    
+    // Keep input focused
+    terminalInput.addEventListener('blur', () => {
+        setTimeout(() => terminalInput.focus(), 0);
+    });
+    
+    // Focus input when clicking anywhere on terminal
+    const terminalBody = document.querySelector('.terminal-body');
+    if (terminalBody) {
+        terminalBody.addEventListener('click', () => {
+            terminalInput.focus();
+        });
+    }
+}
 
 // ===========================
 // Smooth Scrolling

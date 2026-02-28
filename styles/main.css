@@ -300,6 +300,9 @@ body {
     padding: 2rem;
     font-family: var(--font-mono);
     font-size: 0.95rem;
+    display: flex;
+    flex-direction: column;
+    max-height: 400px;
 }
 
 .terminal-line {
@@ -308,6 +311,8 @@ body {
 
 .prompt {
     color: var(--primary);
+    margin-right: 0.5rem;
+    user-select: none;
 }
 
 .command {
@@ -337,13 +342,72 @@ body {
 }
 
 .terminal-output {
-    margin-top: 1rem;
+    margin-bottom: 1rem;
+    overflow-y: auto;
+    flex: 1;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) var(--bg-card);
+}
+
+.terminal-output::-webkit-scrollbar {
+    width: 6px;
+}
+
+.terminal-output::-webkit-scrollbar-track {
+    background: var(--bg-card);
+}
+
+.terminal-output::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
 }
 
 .terminal-output p {
     margin: 0.5rem 0;
     opacity: 0;
     animation: fadeInUp 0.6s ease forwards;
+}
+
+.terminal-hint {
+    opacity: 0.6;
+    font-size: 0.85rem;
+    margin-top: 1rem !important;
+}
+
+.terminal-input-line {
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+}
+
+.terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    padding: 0;
+    caret-color: var(--primary);
+}
+
+.terminal-input::selection {
+    background: var(--primary-glow);
+    color: var(--primary);
+}
+
+.terminal-command-line {
+    margin: 0.5rem 0;
+    opacity: 0.9;
+}
+
+.terminal-command-output {
+    margin: 0.5rem 0 1rem 0;
+    padding-left: 2rem;
+    color: var(--text-secondary);
+    white-space: pre-line;
+    line-height: 1.6;
 }
 
 .fade-in-up {
@@ -1078,6 +1142,11 @@ body {
 
     .terminal-body {
         padding: 1.5rem;
+        font-size: 0.85rem;
+        max-height: 350px;
+    }
+    
+    .terminal-input {
         font-size: 0.85rem;
     }
 

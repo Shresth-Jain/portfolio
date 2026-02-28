@@ -53,12 +53,7 @@
                         <span class="terminal-title">terminal@shresth:~</span>
                     </div>
                     <div class="terminal-body">
-                        <p class="terminal-line">
-                            <span class="prompt">visitor@portfolio:~$</span>
-                            <span class="command typed-text"></span>
-                            <span class="cursor">|</span>
-                        </p>
-                        <div class="terminal-output">
+                        <div class="terminal-output" id="terminal-output">
                             <p class="fade-in-up">Hello! I'm <span class="highlight">Shresth Jain</span></p>
                             <p class="fade-in-up delay-1">Software Engineer | Full-Stack Developer</p>
                             <p class="fade-in-up delay-2">Building elegant solutions to complex problems</p>
@@ -66,6 +61,11 @@
                                 <span class="status-success">[✓]</span> System operational
                                 <span class="status-success">[✓]</span> Ready to collaborate
                             </p>
+                            <p class="terminal-hint">Type <span class="highlight">'help'</span> to see available commands</p>
+                        </div>
+                        <div class="terminal-input-line">
+                            <span class="prompt">visitor@portfolio:~$</span>
+                            <input type="text" class="terminal-input" id="terminal-input" autocomplete="off" spellcheck="false" autofocus>
                         </div>
                     </div>
                 </div>
