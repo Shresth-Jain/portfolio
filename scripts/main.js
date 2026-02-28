@@ -1,5 +1,5 @@
 // ===========================
-// Matrix Rain Background Effect
+// Matrix Rain Background Effect with Mouse Interaction
 // ===========================
 
 const canvas = document.getElementById("matrix-canvas");
@@ -12,6 +12,25 @@ const matrixChars = matrix.split("");
 const fontSize = 14;
 let columns;
 let drops;
+let dropOffsets; // Track horizontal displacement for each drop
+
+// Mouse position tracking
+let mouseX = -1000;
+let mouseY = -1000;
+const repulsionRadius = 150; // Radius of mouse influence (increased for visibility)
+const repulsionStrength = 100; // How much the drops get pushed away (increased)
+
+// Track mouse movement
+document.addEventListener("mousemove", (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+// Reset mouse position when it leaves the window
+document.addEventListener("mouseleave", () => {
+  mouseX = -1000;
+  mouseY = -1000;
+});
 
 // Initialize canvas dimensions
 function initCanvas() {
@@ -19,12 +38,28 @@ function initCanvas() {
   canvas.height = window.innerHeight;
   columns = canvas.width / fontSize;
   drops = Array(Math.floor(columns)).fill(1);
+  dropOffsets = Array(Math.floor(columns)).fill(0); // Initialize offsets
 }
 
 // Initialize on page load
 initCanvas();
 
-// Draw matrix rain
+// Calculate repulsion effect from mouse
+function calculateRepulsion(x, y) {
+  const dx = x - mouseX;
+  const dy = y - mouseY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  if (distance < repulsionRadius && distance > 0) {
+    // Calculate displacement based on distance (closer = stronger push)
+    const force = (1 - distance / repulsionRadius) * repulsionStrength;
+    // Return horizontal displacement (normalized direction * force)
+    return (dx / distance) * force;
+  }
+  return 0;
+}
+
+// Draw matrix rain with mouse interaction
 function drawMatrix() {
   // Fade effect
   ctx.fillStyle = "rgba(10, 14, 39, 0.05)";
@@ -35,11 +70,42 @@ function drawMatrix() {
 
   for (let i = 0; i < drops.length; i++) {
     const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
-    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+    // Calculate base position
+    const baseX = i * fontSize;
+    const y = drops[i] * fontSize;
+
+    // Calculate repulsion from mouse
+    const repulsion = calculateRepulsion(baseX, y);
+
+    // Smooth transition of offset (ease towards target) - faster response
+    const targetOffset = repulsion;
+    dropOffsets[i] += (targetOffset - dropOffsets[i]) * 0.25;
+
+    // Apply offset to x position
+    const x = baseX + dropOffsets[i];
+
+    // Draw the character with opacity based on distance from mouse
+    const dx = x - mouseX;
+    const dy = y - mouseY;
+    const distanceToMouse = Math.sqrt(dx * dx + dy * dy);
+
+    // More dramatic dimming near the mouse for "splitting" effect
+    if (distanceToMouse < repulsionRadius) {
+      const normalizedDistance = distanceToMouse / repulsionRadius;
+      // Characters very close to mouse are almost invisible
+      const opacity = Math.pow(normalizedDistance, 0.5); // Power curve for more dramatic effect
+      ctx.fillStyle = `rgba(0, 255, 159, ${opacity})`;
+    } else {
+      ctx.fillStyle = "#00ff9f";
+    }
+
+    ctx.fillText(text, x, y);
 
     // Reset drop to top randomly
     if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
       drops[i] = 0;
+      dropOffsets[i] = 0; // Reset offset when drop resets
     }
     drops[i]++;
   }
@@ -306,16 +372,17 @@ if (terminalInput) {
     }
   });
 
-  // Keep input focused
-  terminalInput.addEventListener("blur", () => {
-    setTimeout(() => terminalInput.focus(), 0);
-  });
+  // Don't trap focus - allow keyboard navigation
+  // Only refocus when clicking inside terminal
 
-  // Focus input when clicking anywhere on terminal
+  // Focus input when clicking anywhere on terminal (not for keyboard navigation)
   const terminalBody = document.querySelector(".terminal-body");
   if (terminalBody) {
-    terminalBody.addEventListener("click", () => {
-      terminalInput.focus();
+    terminalBody.addEventListener("click", (e) => {
+      // Only focus if using mouse (not keyboard)
+      if (e.detail > 0) {
+        terminalInput.focus();
+      }
     });
   }
 }
@@ -364,13 +431,22 @@ const mobileMenu = document.getElementById("mobile-menu");
 const navLinks = document.querySelector(".nav-links");
 
 if (mobileMenu) {
-  mobileMenu.addEventListener("click", () => {
+  // Make mobile menu keyboard accessible
+  mobileMenu.setAttribute("tabindex", "0");
+  mobileMenu.setAttribute("role", "button");
+  mobileMenu.setAttribute("aria-label", "Toggle navigation menu");
+  mobileMenu.setAttribute("aria-expanded", "false");
+
+  // Toggle function
+  const toggleMenu = () => {
+    const isActive = mobileMenu.classList.contains("active");
     mobileMenu.classList.toggle("active");
     navLinks.classList.toggle("active");
+    mobileMenu.setAttribute("aria-expanded", !isActive ? "true" : "false");
 
     // Animate hamburger menu
     const spans = mobileMenu.querySelectorAll("span");
-    if (mobileMenu.classList.contains("active")) {
+    if (!isActive) {
       spans[0].style.transform = "rotate(45deg) translateY(8px)";
       spans[1].style.opacity = "0";
       spans[2].style.transform = "rotate(-45deg) translateY(-8px)";
@@ -397,13 +473,24 @@ if (mobileMenu) {
         }
       }, 300);
     }
+  };
+
+  // Click handler
+  mobileMenu.addEventListener("click", toggleMenu);
+
+  // Keyboard handler (Space and Enter)
+  mobileMenu.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      toggleMenu();
+    }
   });
 
   // Close mobile menu when clicking on a link
   navLinks.querySelectorAll(".nav-link").forEach((link) => {
     link.addEventListener("click", () => {
       if (window.innerWidth <= 968) {
-        mobileMenu.click();
+        toggleMenu();
       }
     });
   });
